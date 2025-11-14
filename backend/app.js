@@ -1,9 +1,15 @@
 import express from 'express'
+import authRouthes from './routers/authRoutes'
+
+app.use(authRouthes)
 
 const app = express(); 
 
 app.get("/", (req,res) => {
-    res.send({data:"hello"})
+    res.send({data:"hello"}) 
+})
+
+app.get("/login",(req,res)=> {
     
 })
 

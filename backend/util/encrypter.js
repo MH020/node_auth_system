@@ -12,10 +12,11 @@ export async function encryptPassword(password){
 
 }
 
-async function validatePassword(password) {
+function validatePassword(password,hash) {
         if(typeof password !== "string"){
         throw new Error("password is not a string yo")
     } 
+    return bcrypt.compare(password,hash)
 }
 
 
