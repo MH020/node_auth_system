@@ -5,12 +5,18 @@ import session from 'express-session';
 
 const router = Router(); 
 
+
+
 router.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }
 }));
+
+function isLoggedIn(req,res,next){
+    
+}
 
 
 router.get('/user', async (req,res) => {

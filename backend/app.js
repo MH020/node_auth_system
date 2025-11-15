@@ -12,10 +12,6 @@ app.use(express.static('./../frontend/dist'))
 app.use(authRouthes)
 
 
-
-
-
-
 app.get("/", (req,res) => {
     res.send({data:"hello"}) 
 })
