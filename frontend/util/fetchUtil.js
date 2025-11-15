@@ -1,4 +1,4 @@
-import {BASE_URL}  from '../src/store/generalstore'
+import { BASE_URL }  from '../src/store/generalstore'
 
 export async function fetchGet(endpoint) {
     try {
@@ -12,7 +12,9 @@ export async function fetchGet(endpoint) {
 }
 
 export async function fetchPost(endpoint, body) {
-    const response = await fetch(BASE_URL + endpoint, {
+    console.log("run fetch login ?")
+
+    const response = await fetch("http://localhost:8080"+ endpoint, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -20,5 +22,7 @@ export async function fetchPost(endpoint, body) {
         },
         body: JSON.stringify(body)
     });
+    console.log(response)
+    console.log(BASE_URL + endpoint)
     return await response.json();
 }

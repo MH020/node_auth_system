@@ -1,16 +1,16 @@
-import 'dotenv/config';
 import { Router } from 'express';
-import auth from './../encrypter'
+import auth from './../util/encrypter.js'
 import session from 'express-session';
 
-app.use(session({
+
+const router = Router(); 
+
+router.use(session({
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false }
 }));
-
-const router = Router(); 
 
 
 router.get('/user', async (req,res) => {

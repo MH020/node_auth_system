@@ -10,19 +10,20 @@
   async function handleLogin(event) {
     event.preventDefault(); 
 
-    const response = await fetchPost("/login",{email,password})
+    const body = {email,password}
+    console.log(email,password)
 
-    if(response.ok){
+    const data = await fetchPost("/login",body)
+    console.log(data)
+
+    if(data.status === 200){
         navigate("/profile")
     } else {
         toastr.error("login failed","login")
         toastr.info("please make sure the information is correct and that you are a user")
     }
-
   }
 </script>
-
-
 
 <h1>login Page</h1>
 <form on:submit={handleLogin}>
