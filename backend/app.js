@@ -20,10 +20,6 @@ app.get("/login", (req,res) => {
     res.sendFile(path.resolve("../frontend/dist/index.html")) 
 })
 
-app.post("/login",(req,res)=> {
-    res.status(200).send({message: "login"})
-
-})
 
 const PORT = 8080
 app.listen(PORT, () => {

@@ -15,7 +15,8 @@
 	],
 	"features": {
 		"ghcr.io/devcontainers/features/github-cli:1": {},
-		"ghcr.io/joshuanianji/devcontainer-features/github-cli-persistence:1": {}
+		"ghcr.io/joshuanianji/devcontainer-features/github-cli-persistence:1": {},
+		"ghcr.io/warrenbuckley/codespace-features/sqlite:1": {}
 	}
 
 	// Use 'postCreateCommand' to run commands after the container is created.
