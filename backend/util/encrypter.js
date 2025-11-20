@@ -14,7 +14,7 @@ export async function encryptPassword(password){
 
 function validatePassword(password,hash) {
         if(typeof password !== "string"){
-        throw new Error("password is not a string yo")
+        throw new Error("password is not a string")
     } 
     return bcrypt.compare(password,hash)
 }

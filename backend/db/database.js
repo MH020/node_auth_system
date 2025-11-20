@@ -1,15 +1,13 @@
-import sqlite3 from 'sqlite3';
-sqlite3.verbose();
+import db from './connection.js';
 
-const db = new sqlite3.Database('./database');
-
-db.serialize(() => {
-  db.run(`CREATE TABLE users (
+db.exec(`CREATE TABLE IF NOT EXISTS users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT NOT NULL,
     password TEXT NOT NULL,
-    email TEXT UNIQUE NOT NULL
+    email TEXT UNIQUE NOT NULL,
+    role TEXT CHECK( role IN ("ADMIN", "USER") )
   )`);
-});
 
-export default db;
+
+  db.run(`INSERT INTO users (username,password,email,role) VALUES ('test','123','test@test.com', 'USER');`);
+
