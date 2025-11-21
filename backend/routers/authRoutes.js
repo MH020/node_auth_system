@@ -43,13 +43,29 @@ router.post("/login",async (req,res)=> {
     return res.status(200).send({ message: "login successful" });
 })
 
-router.post('/user',async (req,res) =>{
-    const {username, password, email} = req.body
-    hashPassword = await auth.encryptPassword(password)
+router.post('/user', async (req, res) => {
+    try {
+        const { username, password, email } = req.body;
 
-    const result = await db.run(
-        'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',[username, hashPassword, email]
-    );  
-})
+        if (!username || !password || !email) {
+            return res.status(400).send({ message: "Missing required fields" });
+        }
+
+        const hashPassword = await auth.encryptPassword(password);
+
+        await db.run(
+            'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
+            [username, hashPassword, email]
+        );
+
+        return res.status(201).send({ message: "User created successfully" });
+
+        //email needs to be sent 
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: "Server error", error: error.message });
+    }
+});
 
 export default router
