@@ -46,7 +46,10 @@ router.post("/login",async (req,res)=> {
 router.post('/user',async (req,res) =>{
     const {username, password, email} = req.body
     hashPassword = await auth.encryptPassword(password)
-  
+
+    const result = await db.run(
+        'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',[username, hashPassword, email]
+    );  
 })
 
 export default router
