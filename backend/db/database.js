@@ -5,6 +5,9 @@ db.exec(`CREATE TABLE IF NOT EXISTS users(
     username TEXT NOT NULL,
     password TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
+    verification_code TEXT,
+    verification_timed_out INTEGER,
+    verified INTEGER DEFAULT 0,
     role TEXT CHECK( role IN ("ADMIN", "USER") )
   )`);
 

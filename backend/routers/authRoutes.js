@@ -2,6 +2,8 @@ import { Router } from 'express';
 import auth from './../util/encrypter.js'
 import session from 'express-session';
 import db from '../db/connection.js'
+import sendMail from '../util/nodeMailer.js';
+import crypto from 'crypto'
 
 
 const router = Router(); 
@@ -27,7 +29,7 @@ router.get('/user', async (req,res) => {
 })
 
 
-router.post("/login",async (req,res)=> {
+router.post("/api/login",async (req,res)=> {
     const {password, email} = req.body
     const result = await db.all('SELECT * FROM users WHERE email = ?', email)
     const user = result[0]
@@ -43,7 +45,10 @@ router.post("/login",async (req,res)=> {
     return res.status(200).send({ message: "login successful" });
 })
 
-router.post('/user', async (req, res) => {
+
+
+//new user
+router.post('/api/user', async (req, res) => {
     try {
         const { username, password, email } = req.body;
 
@@ -51,20 +56,32 @@ router.post('/user', async (req, res) => {
             return res.status(400).send({ message: "missing fields" });
         }
 
+        const usedEmail = await db.all('SELECT * FROM users WHERE email = ?', email)
+        if(usedEmail.length > 0){
+            return res.status(409).send({ message: "email allready in use"});
+        }
+
+        const verificationCode = crypto.randomBytes(6);
+        console.log(verificationCode)
+
+        const expires = Date.now() + (15 * 60 * 1000);
+
         const hashPassword = await auth.encryptPassword(password);
 
         await db.run(
-            'INSERT INTO users (username, password, email) VALUES (?, ?, ?)',
-            [username, hashPassword, email]
+            `INSERT INTO users (username, password, email, verified, verification_code, verification_timed_out)
+             VALUES (?, ?, ?, 0, ?, ?)`,
+            [username, hashPassword, email, verificationCode, expires]
         );
 
-        return res.status(201).send({ message: "User created successfully" });
+        //email needs to be sent
 
-        //email needs to be sent 
+        return res.status(201).send({ message: "User created successfully" });
+ 
 
     } catch (error) {
         console.error(error);
-        return res.status(500).send({ message: "Server error", error: error.message });
+        return res.status(500).send({ message: "server error", error: error.message });
     }
 });
 

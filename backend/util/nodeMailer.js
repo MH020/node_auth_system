@@ -12,16 +12,16 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendMail(email) {
+async function sendMail(email,subject,text,html) {
     const info = {
         from: {
             name: "Wall of Guns",
             address: process.env.GMAIL_USER
         },
         to: email,
-        subject: 'wow',
-        text: 'Hello world?',
-        html: '<b>Hello world?</b>',
+        subject: subject,
+        text: text,
+        html: html,
     };
     try {
         transporter.sendMail(info);
@@ -30,4 +30,7 @@ async function sendMail(email) {
         console.log("Error sending mail:", error);
     }
 }
+
+
+export default sendMail
 
