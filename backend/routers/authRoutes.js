@@ -61,7 +61,8 @@ router.post('/api/user', async (req, res) => {
             return res.status(409).send({ message: "email allready in use"});
         }
 
-        const verificationCode = crypto.randomBytes(6);
+        const code = crypto.randomBytes(3);
+        const verificationCode = code.toString("hex")
         console.log(verificationCode)
 
         const expires = Date.now() + (15 * 60 * 1000);
