@@ -48,7 +48,7 @@ router.post('/user', async (req, res) => {
         const { username, password, email } = req.body;
 
         if (!username || !password || !email) {
-            return res.status(400).send({ message: "Missing required fields" });
+            return res.status(400).send({ message: "missing fields" });
         }
 
         const hashPassword = await auth.encryptPassword(password);
