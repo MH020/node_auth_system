@@ -4,6 +4,7 @@ import session from 'express-session';
 import db from '../db/connection.js'
 import sendMail from '../util/nodeMailer.js';
 import crypto from 'crypto'
+import { buildSingupEmail } from '../util/emailPageBuilder.js';
 
 
 const router = Router(); 
@@ -75,7 +76,10 @@ router.post('/api/user', async (req, res) => {
             [username, hashPassword, email, verificationCode, expires]
         );
 
+        const singupHTML = buildSingupEmail(username,verificationCode)
+
         //email needs to be sent
+        sendMail(email,"vaify signup","welcome to the front soldier",singupHTML)
 
         return res.status(201).send({ message: "User created successfully" });
  
