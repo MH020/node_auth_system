@@ -2,12 +2,14 @@
   import { onMount } from 'svelte';
   import { navigate } from 'svelte-routing';
   import { fetchGet } from '../../util/fetchUtil';
-   import { user, loading } from '../store/userStore';
+  import { user, loading } from '../store/userStore';
+  import toastr from 'toastr';
 
   onMount(async () => {
     const response = await fetchGet('/users/id')
     console.log(response)
     if (response.status !== 200) {
+      toastr.warning(response.data.status,response.data.message);
       navigate('/login');
     } else {
       user.set(response.data)

@@ -25,8 +25,7 @@
 
       toastr.warning(data.status,data.message);
       needsVerification = true;     
-
-
+      
     } else {
       toastr.error(data.status,data.message)
     }

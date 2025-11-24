@@ -17,7 +17,6 @@
     <Link to='/'>Home</Link>
     <Link to='/login'>login</Link>
     <Link to='/profile'>profile</Link>
-
   </nav>
   <div>
     <Route path='/'><h1>THE WALL OF GUNS</h1></Route>
