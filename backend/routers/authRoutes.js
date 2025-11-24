@@ -10,13 +10,6 @@ import { buildSingupEmail } from '../util/emailPageBuilder.js';
 const router = Router(); 
 
 
-router.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
-}));
-
 function isLoggedIn(req,res,next){
     if(req.session.user){
         return next(); 
@@ -66,7 +59,7 @@ router.post("/api/login",async (req,res)=> {
 
 
 //new user
-router.post('/api/user', async (req, res) => {
+router.post('/api/users', async (req, res) => {
     try {
         const { username, password, email } = req.body;
 
@@ -83,14 +76,14 @@ router.post('/api/user', async (req, res) => {
         const verificationCode = code.toString("hex")
         console.log(verificationCode)
 
-        const expires = Date.now() + (15 * 60 * 1000);
+
 
         const hashPassword = await auth.encryptPassword(password);
 
         await db.run(
-            `INSERT INTO users (username, password, email, verified, verification_code, verification_timed_out)
+            `INSERT INTO users (username, password, email, verified, verification_code)
              VALUES (?, ?, ?, 0, ?, ?)`,
-            [username, hashPassword, email, verificationCode, expires]
+            [username, hashPassword, email, verificationCode]
         );
 
         const singupHTML = buildSingupEmail(username,verificationCode)
@@ -108,19 +101,28 @@ router.post('/api/user', async (req, res) => {
 });
 
 router.post("/api/vaify",async (req,res)=> {
-    const verificationCode = req.body
-    const result = await db.all('SELECT * FROM users WHERE verification_code = ?', verificationCode)
-    const user = result[0]
-    
-    console.log(result)
-    if (result.length == 0 || user.verificationCode != verificationCode){
-        return res.status(401).send({message: "incorrect"})
+    try {
+        const {verificationCode} = req.body
+        const result = await db.all('SELECT * FROM users WHERE verification_code = ?', verificationCode)
+        const user = result[0]
+
+        console.log(result)
+        if (result.length == 0 || user.verificationCode != verificationCode){
+            return res.status(401).send({message: "incorrect"})
+        }
+
+        if(user.verified == 1){
+            return res.status(403).send({message: "this user is allready varified"})
+        }
+
+        await db.run(`UPDATE users SET verified = 1 WHERE verification_code = ?`, verificationCode);
+
+        return res.status(200).send({ message: "vaification successful" });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: "server error", error: error.message });
     }
-    req.session.user = {
-        id: user.id,
-        name: user.username
-    };
-    return res.status(200).send({ message: "vaification successful" });
 })
 
 export default router

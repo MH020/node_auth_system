@@ -6,11 +6,10 @@ db.exec(`CREATE TABLE IF NOT EXISTS users(
     password TEXT NOT NULL,
     email TEXT UNIQUE NOT NULL,
     verification_code TEXT,
-    verification_timed_out INTEGER,
     verified INTEGER DEFAULT 0,
     role TEXT CHECK( role IN ("ADMIN", "USER") )
   )`);
 
 
-  db.run(`INSERT INTO users (username,password,email,verification_code,verification_timed_out,verified,role) VALUES ('test','123','test@test.com','boo','11111','1','USER');`);
+  db.run(`INSERT INTO users (username,password,email,verification_code,verification_timed_out,verified,role) VALUES ('test','123','test@test.com','boo','1','USER');`);
 

@@ -5,6 +5,7 @@
 
   let email;
   let password;
+  let needsVerification = false
 
   async function handleLogin(event) {
     event.preventDefault(); 
@@ -15,12 +16,18 @@
     const data = await fetchPost("/api/login",body)
     console.log(data)
 
-    if(data.status == 200){
+    if(data.status === 200){
       toastr.success(data.message)
       navigate("/profile")
+
+    } else if(data.status === 403) {
+
+      toastr.warning(data.status,data.message);
+      needsVerification = true;     
+
+
     } else {
-        toastr.error(data.status,data.message)
-        toastr.info("please make sure the information is correct and that you are a user")
+      toastr.error(data.status,data.message)
     }
   }
 </script>

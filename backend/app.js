@@ -10,6 +10,13 @@ app.use(express.json())
 
 app.use(express.static('./../frontend/dist'))
 
+app.use(session({
+    secret: process.env.SESSION_SECRET,
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false }
+}));
+
 
 app.use(authRouthes)
 
