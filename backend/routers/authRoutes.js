@@ -25,11 +25,18 @@ function isLoggedIn(req,res,next){
 }
 
 
-router.get('/user',isLoggedIn, async (req,res) => {
+router.get('/users/id',isLoggedIn, async (req,res) => {
+    try {
 
-    const user = await db.all('SELECT * FROM users where username = ?', req.session.user.username)
+    const result = await db.all('SELECT * FROM users where id = ?', req.session.user.id)
+    const user = result[0]
 
-    
+    return res.status(200).send({ username: user.username, email: user.email, role: user.role});
+        
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: "server error", error: error.message });
+    }
 
 })
 
