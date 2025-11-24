@@ -90,7 +90,7 @@ router.post('/api/users', async (req, res) => {
         //email needs to be sent
         sendMail(email,"vaify signup","welcome to the front soldier",singupHTML)
 
-        return res.status(0).send({ message: "User created successfully a email has been sent with the ferification code" });
+        return res.status(201).send({ message: "User created successfully a email has been sent with the ferification code" });
  
 
     } catch (error) {

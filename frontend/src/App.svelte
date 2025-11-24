@@ -1,7 +1,6 @@
 <script>
   import { Router, Link, Route } from "svelte-routing";
   import 'toastr/build/toastr.min.css';
-  import toastr from 'toastr';
   import Login from "./pages/login.svelte";
   import Profile from "./pages/profile.svelte";
   
