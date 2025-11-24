@@ -1,13 +1,15 @@
 import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 
-export function readPage (path) {
-  return fs.readFileSync(path).toString()
-}
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 
-const singupHTML = fs.readFileSync('./util/emailPages/signup.html').toString()
+const signupHTMLPath = path.join(__dirname, 'emailPages', 'signup.html')
+const signupHTML = fs.readFileSync(signupHTMLPath, 'utf-8')
 
 export function buildSingupEmail (username, verificationCode) {
-  return singupHTML
+  return signupHTML
     .replace('$$userName$$', username)
     .replace('$$verificationCode$$', verificationCode)
 }
