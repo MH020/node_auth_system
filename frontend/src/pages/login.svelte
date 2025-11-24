@@ -25,25 +25,26 @@
 
       toastr.warning(data.status,data.message);
       needsVerification = true;     
-      
+
     } else {
       toastr.error(data.status,data.message)
     }
   }
 
 
-      async function handleVerification(event) {
-        event.preventDefault();
-           const request = {email,verificationCode}
-        const data = await fetchPost("/api/vaify",request);
-data.status,data.message
-        if (data.status === 200) {
-            toastr.success("Account verified",data.message);
-            needsVerification = false;
-        }
-        else {
-            toastr.error(data.status, data.message);
-        }
+  async function handleVerification(event) {
+    event.preventDefault();
+
+    const request = {email,verificationCode}
+    const data = await fetchPost("/api/vaify",request);
+    
+    if (data.status === 200) {
+      toastr.success("Account verified",data.message);
+      needsVerification = false;
+    }
+    else {
+      toastr.error(data.status, data.message);
+      }
     }
 </script>
 
