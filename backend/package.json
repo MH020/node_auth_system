@@ -4,7 +4,10 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "init_db": "node db/database.js",
+    "seed_db": "node db/database.js seed",
+    "build frontend": "cd ../frontend && npm run build"
   },
   "keywords": [],
   "author": "",

@@ -1,4 +1,8 @@
+import 'dotenv/config'
 import db from './connection.js'
+import auth from './../util/encrypter.js'
+
+const seedMode = process.argv.includes('seed')
 
 db.exec(`CREATE TABLE IF NOT EXISTS users(
     id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -10,4 +14,10 @@ db.exec(`CREATE TABLE IF NOT EXISTS users(
     role TEXT DEFAULT 'USER' CHECK(role IN ('ADMIN', 'USER'))
   )`)
 
-db.run('INSERT INTO users (username,password,email,verification_code,verified,role) VALUES (\'test\',\'123\',\'test@test.com\',\'boo\',\'0\',\'USER\');')
+if (seedMode) {
+  const hashedPassword = await auth.encryptPassword(process.env.ADMIN_PASSWORD)
+  db.run(
+    'INSERT INTO users (username,password,email,verification_code,verified,role) VALUES (?,?,?,?,?,?)',
+    [process.env.ADMIN_USERNAME, hashedPassword, process.env.ADMIN_EMAIL, process.env.ADMIN_CODE, 1, 'ADMIN']
+  )
+}
