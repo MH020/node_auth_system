@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import auth from './../util/encrypter.js'
-import session from 'express-session';
 import db from '../db/connection.js'
 import sendMail from '../util/nodeMailer.js';
 import crypto from 'crypto'
@@ -107,7 +106,7 @@ router.post("/api/vaify",async (req,res)=> {
         const user = result[0]
 
         console.log(result)
-        if (result.length == 0 || user.verificationCode != verificationCode){
+        if (result.length == 0 || user.verification_code != verificationCode){
             return res.status(401).send({message: "incorrect"})
         }
 

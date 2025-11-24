@@ -3,6 +3,7 @@ import express from 'express'
 import authRouthes from './routers/authRoutes.js'
 import path from 'path'
 import helmet from 'helmet';
+import session from 'express-session';
 
 const app = express(); 
 

@@ -6,6 +6,7 @@
   let email;
   let password;
   let needsVerification = false
+  let verificationCode = "";
 
   async function handleLogin(event) {
     event.preventDefault(); 
@@ -30,6 +31,21 @@
       toastr.error(data.status,data.message)
     }
   }
+
+
+      async function handleVerification(event) {
+        event.preventDefault();
+           const request = {email,verificationCode}
+        const data = await fetchPost("/api/vaify",request);
+data.status,data.message
+        if (data.status === 200) {
+            toastr.success("Account verified",data.message);
+            needsVerification = false;
+        }
+        else {
+            toastr.error(data.status, data.message);
+        }
+    }
 </script>
 
 <h1>login Page</h1>
@@ -46,3 +62,19 @@
 
   <button type="submit">Login</button>
 </form>
+
+{#if needsVerification}
+    <div style="margin-top:20px; padding:15px; border:1px solid #ccc;">
+        <h3>Enter Verification Code</h3>
+
+        <form on:submit={handleVerification}>
+            <input 
+                type="text" 
+                placeholder="Verification code"
+                bind:value={verificationCode}
+                required
+            />
+            <button type="submit">Verify Account</button>
+        </form>
+    </div>
+{/if}

@@ -3,7 +3,7 @@
   import { navigate } from 'svelte-routing';
 
   onMount(() => {
-    fetch('/api/user')
+    fetch('/users/id')
       .then(res => {
         if (res.status !== 200) {
           navigate('/login');
