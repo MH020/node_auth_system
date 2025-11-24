@@ -1,15 +1,28 @@
 <script>
   import { onMount } from 'svelte';
   import { navigate } from 'svelte-routing';
+  import { fetchGet } from '../../util/fetchUtil';
+   import { user, loading } from '../store/userStore';
 
-  onMount(() => {
-    fetch('/users/id')
-      .then(res => {
-        if (res.status !== 200) {
-          navigate('/login');
-        } else {
-          
-        }
-      });
+  onMount(async () => {
+    const response = await fetchGet('/users/id')
+    console.log(response)
+    if (response.status !== 200) {
+      navigate('/login');
+    } else {
+      user.set(response.data)
+      loading.set(false);
+    }
   });
 </script>
+
+{#if $loading}
+  <p>Loading profile</p>
+{:else}
+  <div class="profile">
+    <h1>Profile</h1>
+    <p><strong>Username:</strong> {$user.username}</p>
+    <p><strong>Email:</strong> {$user.email}</p>
+    <p><strong>Role:</strong> {$user.role}</p>
+  </div>
+{/if}

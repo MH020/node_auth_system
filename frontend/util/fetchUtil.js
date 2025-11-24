@@ -2,10 +2,11 @@ import { BASE_URL }  from '../src/store/generalstore'
 
 export async function fetchGet(endpoint) {
     try {
-        const response = await fetch(BASE_URL + endpoint, {
+        const response = await fetch("http://localhost:8080" + endpoint, {
             credentials: 'include'
         });
-        return await response.json();
+        const data = await response.json(); 
+        return {status: response.status, data};
     } catch (error) {
         console.log(error);
     }
