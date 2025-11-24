@@ -5,8 +5,10 @@
 
   let email;
   let password;
+  let username
   let needsVerification = false
   let verificationCode = "";
+  let isSignup = false;
 
   async function handleLogin(event) {
     event.preventDefault(); 
@@ -37,44 +39,94 @@
 
     const request = {email,verificationCode}
     const data = await fetchPost("/api/vaify",request);
-    
+
     if (data.status === 200) {
       toastr.success("Account verified",data.message);
       needsVerification = false;
-    }
-    else {
+    } else {
       toastr.error(data.status, data.message);
-      }
     }
+  }
+
+
+  async function handleSignup(event) {
+    event.preventDefault();
+    const request = {email, password, username}
+    const data = await fetchPost("/api/users",request);
+    if (data.status === 200) {
+      toastr.success("account created",data.message);
+      isSignup = false;
+      needsVerification = true
+    } else {
+    toastr.error(data.status, data.message);
+    }
+  }
 </script>
 
-<h1>login Page</h1>
+{#if !isSignup}
+<h1>Login Page</h1>
+
 <form on:submit={handleLogin}>
-  <div>
-    <label for="email">Email:</label>
-    <input id="email" type="email" bind:value={email} required />
-  </div>
+    <div>
+        <label for="email">email:</label>
+        <input id="email" type="email" bind:value={email} required />
+    </div>
 
-  <div>
-    <label for="password">Password:</label>
-    <input id="password" type="password" bind:value={password} required />
-  </div>
+    <div>
+        <label for="password">password:</label>
+        <input id="password" type="password" bind:value={password} required />
+    </div>
 
-  <button type="submit">Login</button>
+    <button type="submit">Login</button>
+
+    <button type="button" on:click={() => isSignup = true}>
+        Go to Signup
+    </button>
 </form>
+{/if}
+
+
+{#if isSignup}
+<h1>Signup Page</h1>
+
+<form on:submit={handleSignup}>
+    <div>
+        <label for="password">email:</label>
+        <input id="password" type="email" bind:value={email} required />
+    </div>
+
+    <div>
+        <label for="password">password:</label>
+        <input id="password" type="password" bind:value={password} required />
+    </div>
+
+    <div>
+        <label for="username">username:</label>
+        <input id="username" type="username" bind:value={username} required />
+    </div>
+
+    <button type="submit">Create Account</button>
+
+    <button type="button" on:click={() => isSignup = false}>
+        Go to Login
+    </button>
+</form>
+{/if}
+
+
 
 {#if needsVerification}
-    <div style="margin-top:20px; padding:15px; border:1px solid #ccc;">
-        <h3>Enter Verification Code</h3>
+<div style="margin-top:20px; padding:15px; border:1px solid #ccc;">
+    <h3>Enter Verification Code</h3>
 
-        <form on:submit={handleVerification}>
-            <input 
-                type="text" 
-                placeholder="Verification code"
-                bind:value={verificationCode}
-                required
-            />
-            <button type="submit">Verify Account</button>
-        </form>
-    </div>
+    <form on:submit={handleVerification}>
+        <input 
+            type="text" 
+            placeholder="Verification code"
+            bind:value={verificationCode}
+            required
+        />
+        <button type="submit">Verify Account</button>
+    </form>
+</div>
 {/if}

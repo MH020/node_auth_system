@@ -81,7 +81,7 @@ router.post('/api/users', async (req, res) => {
 
         await db.run(
             `INSERT INTO users (username, password, email, verified, verification_code)
-             VALUES (?, ?, ?, 0, ?, ?)`,
+             VALUES (?, ?, ?, 0, ?)`,
             [username, hashPassword, email, verificationCode]
         );
 
@@ -90,7 +90,7 @@ router.post('/api/users', async (req, res) => {
         //email needs to be sent
         sendMail(email,"vaify signup","welcome to the front soldier",singupHTML)
 
-        return res.status(201).send({ message: "User created successfully" });
+        return res.status(0).send({ message: "User created successfully a email has been sent with the ferification code" });
  
 
     } catch (error) {

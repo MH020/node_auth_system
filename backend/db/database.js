@@ -7,7 +7,7 @@ db.exec(`CREATE TABLE IF NOT EXISTS users(
     email TEXT UNIQUE NOT NULL,
     verification_code TEXT,
     verified INTEGER DEFAULT 0,
-    role TEXT CHECK( role IN ("ADMIN", "USER") )
+    role TEXT DEFAULT 'USER' CHECK(role IN ('ADMIN', 'USER'))
   )`);
 
 
