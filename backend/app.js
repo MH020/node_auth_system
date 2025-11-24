@@ -26,9 +26,13 @@ app.get("/", (req,res) => {
     res.send({data:"hello"}) 
 })
 
-app.get("/login", (req,res) => {
+app.get("/{*splat}", (req, res) => {
     res.sendFile(path.resolve("../frontend/dist/index.html")) 
-})
+});
+
+app.all("/{*splat}", (req, res) => {
+    res.status(404).send({ data: "Didn't match with a route" });
+});
 
 
 const PORT = 8080
