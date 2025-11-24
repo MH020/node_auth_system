@@ -47,7 +47,7 @@
     const data = await fetchPost("/api/users",request);
     toastrDisplayHTTPCode(data.status,data.message)
 
-    if (data.status === 200) {
+    if (data.status === 201) {
       isSignup = false;
       needsVerification = true
     } 
@@ -82,8 +82,8 @@
 
 <form on:submit={handleSignup}>
     <div>
-        <label for="password">email:</label>
-        <input id="password" type="email" bind:value={email} required />
+        <label for="email">email:</label>
+        <input id="email" type="email" bind:value={email} required />
     </div>
 
     <div>

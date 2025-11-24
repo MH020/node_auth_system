@@ -10,7 +10,7 @@ const router = Router()
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 6,
+  limit: 30,
   standardHeaders: 'draft-8',
   legacyHeaders: false
 })
@@ -41,7 +41,6 @@ router.post('/api/login', async (req, res) => {
   const result = await db.all('SELECT * FROM users WHERE email = ?', email)
   const user = result[0]
 
-  console.log(result)
   if (result.length === 0 || !auth.validatePassword(password, user.password)) {
     return res.status(401).send({ message: 'incorrect' })
   }
@@ -57,7 +56,7 @@ router.post('/api/login', async (req, res) => {
   return res.status(200).send({ message: 'login successful' })
 })
 
-// new user
+
 router.post('/api/users', async (req, res) => {
   try {
     const { username, password, email } = req.body
@@ -73,7 +72,6 @@ router.post('/api/users', async (req, res) => {
 
     const code = crypto.randomBytes(3)
     const verificationCode = code.toString('hex')
-    console.log(verificationCode)
 
     const hashPassword = await auth.encryptPassword(password)
 
@@ -101,7 +99,6 @@ router.post('/api/vaify', async (req, res) => {
     const result = await db.all('SELECT * FROM users WHERE verification_code = ?', verificationCode)
     const user = result[0]
 
-    console.log(result)
     if (result.length === 0 || user.verification_code !== verificationCode) {
       return res.status(401).send({ message: 'incorrect' })
     }
