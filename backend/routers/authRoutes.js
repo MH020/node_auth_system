@@ -1,127 +1,122 @@
-import { Router } from 'express';
+import { Router } from 'express'
 import auth from './../util/encrypter.js'
 import db from '../db/connection.js'
-import sendMail from '../util/nodeMailer.js';
+import sendMail from '../util/nodeMailer.js'
 import crypto from 'crypto'
-import { buildSingupEmail } from '../util/emailPageBuilder.js';
+import { buildSingupEmail } from '../util/emailPageBuilder.js'
+import { rateLimit } from 'express-rate-limit'
 
+const router = Router()
 
-const router = Router(); 
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 6,
+  standardHeaders: 'draft-8',
+  legacyHeaders: false
+})
 
+router.use(authLimiter)
 
-function isLoggedIn(req,res,next){
-    if(req.session.user){
-        return next(); 
-    }
-    res.status(401).send({message: "you need to be logged in to acess this content"})
+function isLoggedIn (req, res, next) {
+  if (req.session.user) {
+    return next()
+  }
+  res.status(401).send({ message: 'you need to be logged in to acess this content' })
 }
 
-
-router.get('/users/id',isLoggedIn, async (req,res) => {
-    try {
-
+router.get('/users/id', isLoggedIn, async (req, res) => {
+  try {
     const result = await db.all('SELECT * FROM users where id = ?', req.session.user.id)
     const user = result[0]
 
-    return res.status(200).send({ username: user.username, email: user.email, role: user.role});
-        
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({ message: "server error", error: error.message });
-    }
-
+    return res.status(200).send({ username: user.username, email: user.email, role: user.role })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).send({ message: 'server error', error: error.message })
+  }
 })
 
+router.post('/api/login', async (req, res) => {
+  const { password, email } = req.body
+  const result = await db.all('SELECT * FROM users WHERE email = ?', email)
+  const user = result[0]
 
-router.post("/api/login",async (req,res)=> {
-    const {password, email} = req.body
-    const result = await db.all('SELECT * FROM users WHERE email = ?', email)
-    const user = result[0]
-    
-    console.log(result)
-    if (result.length == 0 || !auth.validatePassword(password, user.password)){
-        return res.status(401).send({message: "incorrect"})
-    }
+  console.log(result)
+  if (result.length === 0 || !auth.validatePassword(password, user.password)) {
+    return res.status(401).send({ message: 'incorrect' })
+  }
 
-    if(user.verified == 0){
-        return res.status(403).send({message: "you are not varrified yet"})
-    }
+  if (user.verified === 0) {
+    return res.status(403).send({ message: 'you are not varrified yet' })
+  }
 
-    
-    req.session.user = {
-        id: user.id,
-        name: user.username
-    };
-    return res.status(200).send({ message: "login successful" });
+  req.session.user = {
+    id: user.id,
+    name: user.username
+  }
+  return res.status(200).send({ message: 'login successful' })
 })
 
-
-
-//new user
+// new user
 router.post('/api/users', async (req, res) => {
-    try {
-        const { username, password, email } = req.body;
+  try {
+    const { username, password, email } = req.body
 
-        if (!username || !password || !email) {
-            return res.status(400).send({ message: "missing fields" });
-        }
+    if (!username || !password || !email) {
+      return res.status(400).send({ message: 'missing fields' })
+    }
 
-        const usedEmail = await db.all('SELECT * FROM users WHERE email = ?', email)
-        if(usedEmail.length > 0){
-            return res.status(409).send({ message: "email allready in use"});
-        }
+    const usedEmail = await db.all('SELECT * FROM users WHERE email = ?', email)
+    if (usedEmail.length > 0) {
+      return res.status(409).send({ message: 'email allready in use' })
+    }
 
-        const code = crypto.randomBytes(3);
-        const verificationCode = code.toString("hex")
-        console.log(verificationCode)
+    const code = crypto.randomBytes(3)
+    const verificationCode = code.toString('hex')
+    console.log(verificationCode)
 
+    const hashPassword = await auth.encryptPassword(password)
 
-
-        const hashPassword = await auth.encryptPassword(password);
-
-        await db.run(
+    await db.run(
             `INSERT INTO users (username, password, email, verified, verification_code)
              VALUES (?, ?, ?, 0, ?)`,
             [username, hashPassword, email, verificationCode]
-        );
+    )
 
-        const singupHTML = buildSingupEmail(username,verificationCode)
+    const singupHTML = buildSingupEmail(username, verificationCode)
 
-        //email needs to be sent
-        sendMail(email,"vaify signup","welcome to the front soldier",singupHTML)
+    // email needs to be sent
+    sendMail(email, 'vaify signup', 'welcome to the front soldier', singupHTML)
 
-        return res.status(201).send({ message: "User created successfully a email has been sent with the ferification code" });
- 
+    return res.status(201).send({ message: 'User created successfully a email has been sent with the ferification code' })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).send({ message: 'server error', error: error.message })
+  }
+})
 
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({ message: "server error", error: error.message });
+router.post('/api/vaify', async (req, res) => {
+  try {
+    const { verificationCode } = req.body
+    const result = await db.all('SELECT * FROM users WHERE verification_code = ?', verificationCode)
+    const user = result[0]
+
+    console.log(result)
+    if (result.length === 0 || user.verification_code !== verificationCode) {
+      return res.status(401).send({ message: 'incorrect' })
     }
-});
 
-router.post("/api/vaify",async (req,res)=> {
-    try {
-        const {verificationCode} = req.body
-        const result = await db.all('SELECT * FROM users WHERE verification_code = ?', verificationCode)
-        const user = result[0]
-
-        console.log(result)
-        if (result.length == 0 || user.verification_code != verificationCode){
-            return res.status(401).send({message: "incorrect"})
-        }
-
-        if(user.verified == 1){
-            return res.status(403).send({message: "this user is allready varified"})
-        }
-
-        await db.run(`UPDATE users SET verified = 1 WHERE verification_code = ?`, verificationCode);
-
-        return res.status(200).send({ message: "vaification successful" });
-
-    } catch (error) {
-        console.error(error);
-        return res.status(500).send({ message: "server error", error: error.message });
+    if (user.verified === 1) {
+      return res.status(403).send({ message: 'this user is allready varified' })
     }
+
+    await db.run('UPDATE users SET verified = 1 WHERE verification_code = ?', verificationCode)
+
+    return res.status(200).send({ message: 'vaification successful' })
+  } catch (error) {
+    console.error(error)
+    return res.status(500).send({ message: 'server error', error: error.message })
+  }
 })
 
 export default router
