@@ -1,8 +1,8 @@
-import { BASE_URL }  from '../src/store/generalstore'
+const BASE_URL = import.meta.env.VITE_BASE_URL;
 
 export async function fetchGet(endpoint) {
     try {
-        const response = await fetch("http://localhost:8080" + endpoint, {
+        const response = await fetch(BASE_URL + endpoint, {
             credentials: 'include'
         });
         const data = await response.json(); 
@@ -15,7 +15,7 @@ export async function fetchGet(endpoint) {
 export async function fetchPost(endpoint, body) {
     console.log("run fetch login ?")
 
-    const response = await fetch("http://localhost:8080"+ endpoint, {
+    const response = await fetch(BASE_URL + endpoint, {
         method: 'POST',
         credentials: 'include',
         headers: {
