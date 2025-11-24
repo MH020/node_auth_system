@@ -3,10 +3,12 @@
   import { navigate } from 'svelte-routing';
 
   onMount(() => {
-    fetch('/profile')
+    fetch('/api/user')
       .then(res => {
-        if (res.status === 401) {
+        if (res.status !== 200) {
           navigate('/login');
+        } else {
+          
         }
       });
   });

@@ -16,7 +16,7 @@
     console.log(data)
 
     if(data.status == 200){
-      toastr.sucess(data.message)
+      toastr.success(data.message)
       navigate("/profile")
     } else {
         toastr.error(data.status,data.message)

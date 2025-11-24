@@ -25,7 +25,11 @@ function isLoggedIn(req,res,next){
 }
 
 
-router.get('/user', async (req,res) => {
+router.get('/user',isLoggedIn, async (req,res) => {
+
+    const user = await db.all('SELECT * FROM users where username = ?', req.session.user.username)
+
+    
 
 })
 
