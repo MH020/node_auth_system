@@ -14,7 +14,12 @@
     <Link to='/profile'>profile</Link>
   </nav>
   <div>
-    <Route path='/'><h1>THE WALL OF GUNS</h1></Route>
+    <Route path='/'>
+      <h1>
+        THE WALL OF GUNS 
+      </h1>
+      <h2><span>Coming Soon™</span></h2>
+    </Route>
     <Route path='/login'><Login /></Route>
     <Route path='/profile'><Profile /></Route>
   </div>
