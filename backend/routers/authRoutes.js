@@ -39,6 +39,12 @@ router.post("/api/login",async (req,res)=> {
     if (result.length == 0 || !auth.validatePassword(password, user.password)){
         return res.status(401).send({message: "incorrect"})
     }
+
+    if(user.verified == 0){
+        return res.status(403).send({message: "you are not varrified yet"})
+    }
+
+    
     req.session.user = {
         id: user.id,
         name: user.username
@@ -89,5 +95,21 @@ router.post('/api/user', async (req, res) => {
         return res.status(500).send({ message: "server error", error: error.message });
     }
 });
+
+router.post("/api/vaify",async (req,res)=> {
+    const verificationCode = req.body
+    const result = await db.all('SELECT * FROM users WHERE verification_code = ?', verificationCode)
+    const user = result[0]
+    
+    console.log(result)
+    if (result.length == 0 || user.verificationCode != verificationCode){
+        return res.status(401).send({message: "incorrect"})
+    }
+    req.session.user = {
+        id: user.id,
+        name: user.username
+    };
+    return res.status(200).send({ message: "vaification successful" });
+})
 
 export default router

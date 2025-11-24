@@ -1,11 +1,10 @@
 <script>
     import {fetchPost} from '../../util/fetchUtil.js'
     import { navigate } from "svelte-routing";
-      import toastr from 'toastr';
+    import toastr from 'toastr';
 
   let email;
   let password;
-  let message;
 
   async function handleLogin(event) {
     event.preventDefault(); 
@@ -13,13 +12,14 @@
     const body = {email,password}
     console.log(email,password)
 
-    const data = await fetchPost("/login",body)
+    const data = await fetchPost("/api/login",body)
     console.log(data)
 
-    if(data.status === 200){
-        navigate("/profile")
+    if(data.status == 200){
+      toastr.sucess(data.message)
+      navigate("/profile")
     } else {
-        toastr.error("login failed","login")
+        toastr.error(data.status,data.message)
         toastr.info("please make sure the information is correct and that you are a user")
     }
   }

@@ -24,5 +24,6 @@ export async function fetchPost(endpoint, body) {
     });
     console.log(response)
     console.log(BASE_URL + endpoint)
-    return await response.json();
+    const data = await response.json(); 
+    return {status: response.status , ...data};
 }

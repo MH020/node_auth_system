@@ -1,8 +1,9 @@
 <script>
   import { Router, Link, Route } from "svelte-routing";
+  import 'toastr/build/toastr.min.css';
   import toastr from 'toastr';
-    toastr.error("login failed","login")
-    toastr.info("please make sure the information is correct and that you are a user")
+    //toastr.error("login failed","login")
+    //toastr.info("please make sure the information is correct and that you are a user")
 
 
 

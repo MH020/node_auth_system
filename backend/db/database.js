@@ -12,5 +12,5 @@ db.exec(`CREATE TABLE IF NOT EXISTS users(
   )`);
 
 
-  db.run(`INSERT INTO users (username,password,email,role) VALUES ('test','123','test@test.com', 'USER');`);
+  db.run(`INSERT INTO users (username,password,email,verification_code,verification_timed_out,verified,role) VALUES ('test','123','test@test.com','boo','11111','1','USER');`);
 
